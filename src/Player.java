@@ -24,7 +24,10 @@ public class Player {
     private final int ID;
 
     // the set of If-Then statements used by this Player
-    private HashMap<State, Move> brain = new HashMap<>();
+    private HashMap<State, Integer> brain = new HashMap<>();
+
+    // the set of new If-Then statements used by this Player in it current game
+    private HashMap<State, Integer> tempBrain = new HashMap<>();
 
     // the number of games played by this Player
     private int gamesPlayed = 0;
@@ -66,8 +69,12 @@ public class Player {
         }
     }
 
-    public Move move(State state) {
-        return brain.get(state);
+    public Integer move(State state, int numOfLegalMoves) {
+        if (brain.containsKey(state))
+            return brain.get(state);
+        int move = (int) (Math.random() * numOfLegalMoves);
+        tempBrain.put(state, move);
+        return move;
     }
 
     public double getWinRate() {
@@ -79,9 +86,12 @@ public class Player {
     public void won() {
         gamesPlayed++;
         gamesWon++;
+        brain.putAll(tempBrain);
+        tempBrain.clear();
     }
 
     public void lost() {
         gamesPlayed++;
+        tempBrain.clear();
     }
 }
