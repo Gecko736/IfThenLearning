@@ -5,7 +5,7 @@ public class State {
     private final int hash;
 
     public State(byte[][] board) {
-        hash = Main.getStateHashCode(board);
+        hash = Game.hasher.getStateHash(board);
         pool.putIfAbsent(hash, new ByteArray(hash, board));
     }
 
