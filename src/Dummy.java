@@ -8,6 +8,9 @@ public class Dummy implements Player {
     private Dummy() {}
 
     @Override
+    public void initiate() {}
+
+    @Override
     public double getWinRate() {
         return 0;
     }
