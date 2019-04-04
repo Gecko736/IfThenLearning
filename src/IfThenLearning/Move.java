@@ -1,12 +1,15 @@
+package IfThenLearning;
+
 import java.util.HashMap;
 
 public class Move {
     private static HashMap<Integer, ByteArray> pool = new HashMap<>();
     private final int hash;
 
-    public Move(byte[] move) {
+    public Move(byte... move) {
         hash = Game.hasher.getMoveHash(move);
-        pool.putIfAbsent(hash, new ByteArray(hash, move));
+        if (!pool.containsKey(hash))
+            pool.put(hash, new ByteArray(hash, move));
     }
 
     public byte get(int index) {
@@ -19,7 +22,8 @@ public class Move {
 
         private ByteArray(int hashCode, byte[] array) {
             this.hashCode = hashCode;
-            this.array = array;
+            this.array = new byte[array.length];
+            System.arraycopy(array, 0, this.array, 0, array.length);
         }
 
         @Override

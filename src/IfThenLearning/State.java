@@ -1,16 +1,27 @@
+package IfThenLearning;
+
 import java.util.HashMap;
 
 public class State {
     private static HashMap<Integer, ByteArray> pool = new HashMap<>();
     private final int hash;
 
+    private State(int hash) {
+        this.hash = hash;
+    }
+
     public State(byte[][] board) {
         hash = Game.hasher.getStateHash(board);
-        pool.putIfAbsent(hash, new ByteArray(hash, board));
+        if (!pool.containsKey(hash))
+            pool.put(hash, new ByteArray(hash, board));
     }
 
     public byte get(int x, int y) {
         return pool.get(hash).array[x][y];
+    }
+
+    public State clone() {
+        return new State(hash);
     }
 
     private class ByteArray {

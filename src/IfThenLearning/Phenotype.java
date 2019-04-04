@@ -1,3 +1,5 @@
+package IfThenLearning;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.Semaphore;
@@ -8,7 +10,7 @@ public class Phenotype implements Player {
     // limit of the randomness variable of all Phenotypes without parents
     private static final double initialRandomnessLimit = 0.05;
 
-    // the chance that a new Phenotype will be born with a randomness not informed
+    // the chance that a new IfThenLearning.Phenotype will be born with a randomness not informed
     // by the randomness of either parent
     private static final double randomRandomnessRate = 0.05;
 
@@ -20,26 +22,23 @@ public class Phenotype implements Player {
 
     /* instance variables ****************************************************/
 
-    // this int by which this Phenotype can be found in the HashSet<Phenotype> in the
-    // Main class
+    // this int by which this IfThenLearning.Phenotype can be found in the HashSet<IfThenLearning.Phenotype> in the
+    // IfThenLearning.Main class
     private final int ID;
 
-    // the set of If-Then statements used by this Phenotype
+    // the set of If-Then statements used by this IfThenLearning.Phenotype
     private HashMap<State, Integer> brain = new HashMap<>();
 
-    // the set of new If-Then statements used by this Phenotype in its current game
-    private HashMap<State, Integer> tempBrain = new HashMap<>();
-
-    // because of the tempBrain, a Phenotype can only play one game at a time
+    // because of the tempBrain, a IfThenLearning.Phenotype can only play one game at a time
     private Semaphore attention = new Semaphore(1);
 
-    // the number of games played by this Phenotype
+    // the number of games played by this IfThenLearning.Phenotype
     private int gamesPlayed = 0;
 
-    // the number of games won by this Phenotype
+    // the number of games won by this IfThenLearning.Phenotype
     private int gamesWon = 0;
 
-    // the chance that this Phenotype will disobey its If-Then statements and make
+    // the chance that this IfThenLearning.Phenotype will disobey its If-Then statements and make
     // a random move on any given turn
     private final double randomness;
 
@@ -85,11 +84,10 @@ public class Phenotype implements Player {
     }
 
     @Override
-    public int move(State state, int numOfLegalMoves) {
+    public synchronized int move(State state, int numOfLegalMoves) {
         if (brain.containsKey(state))
             return brain.get(state);
         int move = (int) (Math.random() * numOfLegalMoves);
-        tempBrain.put(state, move);
         return move;
     }
 
@@ -101,18 +99,16 @@ public class Phenotype implements Player {
     }
 
     @Override
-    public synchronized void won() {
+    public synchronized void won(HashMap<State, Integer> moves) {
         gamesPlayed++;
         gamesWon++;
-        brain.putAll(tempBrain);
-        tempBrain.clear();
+        brain.putAll(moves);
         attention.release();
     }
 
     @Override
     public synchronized void lost() {
         gamesPlayed++;
-        tempBrain.clear();
         attention.release();
     }
 }

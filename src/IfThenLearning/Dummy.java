@@ -1,3 +1,7 @@
+package IfThenLearning;
+
+import java.util.HashMap;
+
 public class Dummy implements Player {
     private static Dummy ourInstance = new Dummy();
 
@@ -16,12 +20,12 @@ public class Dummy implements Player {
     }
 
     @Override
-    public int move(State state, int numOfLegalMoves) {
+    public synchronized int move(State state, int numOfLegalMoves) {
         return (int) (Math.random() * numOfLegalMoves);
     }
 
     @Override
-    public void won() {}
+    public void won(HashMap<State, Integer> moves) {}
 
     @Override
     public void lost() {}

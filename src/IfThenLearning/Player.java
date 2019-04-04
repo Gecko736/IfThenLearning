@@ -1,7 +1,11 @@
+package IfThenLearning;
+
+import java.util.HashMap;
+
 public interface Player {
     void initiate();
     double getWinRate();
     int move(State state, int numOfLegalMoves);
-    void won();
+    void won(HashMap<State, Integer> moves);
     void lost();
 }
