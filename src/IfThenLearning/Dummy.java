@@ -12,6 +12,11 @@ public class Dummy implements Player {
     private Dummy() {}
 
     @Override
+    public String getID() {
+        return "Dummy";
+    }
+
+    @Override
     public void initiate() {}
 
     @Override
@@ -29,4 +34,7 @@ public class Dummy implements Player {
 
     @Override
     public void lost() {}
+
+    @Override
+    public void tied() {}
 }

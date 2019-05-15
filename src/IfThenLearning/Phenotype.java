@@ -2,7 +2,6 @@ package IfThenLearning;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.concurrent.Semaphore;
 
 public class Phenotype implements Player {
     /* static variables ******************************************************/
@@ -16,7 +15,7 @@ public class Phenotype implements Player {
 
     // the static variable from which all new Players get their ID
     private static int nextID = 1;
-    private static synchronized int getID() {
+    private static synchronized int newID() {
         return nextID++;
     }
 
@@ -28,9 +27,6 @@ public class Phenotype implements Player {
 
     // the set of If-Then statements used by this IfThenLearning.Phenotype
     private HashMap<State, Integer> brain = new HashMap<>();
-
-    // because of the tempBrain, a IfThenLearning.Phenotype can only play one game at a time
-    private Semaphore attention = new Semaphore(1);
 
     // the number of games played by this IfThenLearning.Phenotype
     private int gamesPlayed = 0;
@@ -45,12 +41,12 @@ public class Phenotype implements Player {
     /* constructors **********************************************************/
 
     public Phenotype() {
-        ID = getID();
+        ID = newID();
         randomness = Math.random() * initialRandomnessLimit;
     }
 
     public Phenotype(Phenotype mother, Phenotype father) {
-        ID = getID();
+        ID = newID();
 
         if (Math.random() < randomRandomnessRate)
             randomness = Math.random();
@@ -77,18 +73,18 @@ public class Phenotype implements Player {
     /* inherited methods *****************************************************/
 
     @Override
-    public void initiate() {
-        try {
-            attention.acquire();
-        } catch (InterruptedException e) {}
+    public String getID() {
+        return "" + ID;
     }
+
+    @Override
+    public void initiate() {}
 
     @Override
     public synchronized int move(State state, int numOfLegalMoves) {
         if (brain.containsKey(state))
             return brain.get(state);
-        int move = (int) (Math.random() * numOfLegalMoves);
-        return move;
+        return (int) (Math.random() * numOfLegalMoves);
     }
 
     @Override
@@ -103,12 +99,13 @@ public class Phenotype implements Player {
         gamesPlayed++;
         gamesWon++;
         brain.putAll(moves);
-        attention.release();
     }
 
     @Override
     public synchronized void lost() {
         gamesPlayed++;
-        attention.release();
     }
+
+    @Override
+    public void tied() {}
 }

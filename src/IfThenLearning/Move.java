@@ -16,6 +16,11 @@ public class Move {
         return pool.get(hash).array[index];
     }
 
+    @Override
+    public int hashCode() {
+        return hash;
+    }
+
     private class ByteArray {
         private final byte[] array;
         private int hashCode;

@@ -4,14 +4,22 @@ import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
 public abstract class Game extends Thread {
+    public static String name;
     public static int boardWidth;
     public static int boardHeight;
     public static int moveSize;
     public static Hasher hasher;
+    public static Viewer view;
 
     public interface Hasher {
         int getStateHash(byte[][] state);
         int getMoveHash(byte[] move);
+    }
+
+    public interface Viewer {
+        void instructions();
+        void board(IfThenLearning.State state);
+        int getUserMove(IfThenLearning.State state);
     }
 
     private final Player p1;
@@ -35,6 +43,10 @@ public abstract class Game extends Thread {
 
     @Override
     public void run() {
+        play();
+    }
+
+    public final void play() {
         try {
             guard.acquire();
             p1.initiate();
@@ -46,11 +58,11 @@ public abstract class Game extends Thread {
             while (status == Status.IN_PROGRESS) {
                 currentPlayer = 1;
                 move = p1.move(currentState, legalMoves.length);
-                legalMoves = applyFlipCheck(legalMoves[move]);
+                legalMoves = applyCheckFlip(legalMoves[move]);
                 if (status == Status.IN_PROGRESS) {
                     currentPlayer = 2;
                     move = p2.move(currentState, legalMoves.length);
-                    legalMoves = applyFlipCheck(legalMoves[move]);
+                    legalMoves = applyCheckFlip(legalMoves[move]);
                 }
             }
             switch (status) {
@@ -63,26 +75,27 @@ public abstract class Game extends Thread {
                     p2.won(p2Moves);
                     break;
                 case TIE:
-                    p1.lost();
-                    p2.lost();
+                    p1.tied();
+                    p2.tied();
                     break;
             }
             guard.release();
         } catch (InterruptedException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Game " + getId() + " interrupted: " + e.getMessage());
         }
     }
 
-    private Move[] applyFlipCheck(Move move) {
+    private Move[] applyCheckFlip(Move move) {
         newState(move);
-        flipPerspective();
-        Move[] legalMoves = getLegalMoves();
-        if (legalMoves.length == 0) {
-            currentPlayerWon();
+        checkGameOver();
+        if (status == Status.IN_PROGRESS) {
+            flipPerspective();
+            Move[] legalMoves = getLegalMoves();
+            if (legalMoves.length == 0)
+                status = Status.TIE;
             return legalMoves;
         }
-        checkGameOver();
-        return legalMoves;
+        return new Move[0];
     }
 
     public abstract void newState(Move move);

@@ -1,5 +1,4 @@
 package IfThenLearning;
-// obligatory change
 
 public class Population {
     private Player[] population;
@@ -12,7 +11,11 @@ public class Population {
             population[i] = Main.newPlayer();
     }
 
-    public void interate() throws InterruptedException {
+    public Player getBest() {
+        return population[0];
+    }
+
+    public void iterate() throws InterruptedException {
         sort(0, population.length - 1);
         replaceBottom();
     }
@@ -26,23 +29,30 @@ public class Population {
         int size = btm - top;
         if (size == 1)
             return;
-        Game[] games = new Game[(btm - top) / 2];
-        for (int i = 0; i < games.length; i++) {
-            games[i] = Main.newGame(population[top + i], population[top + (i * 2)]);
-            games[i].run();
+        Game[] games = new Game[size / 2];
+        int j = 0;
+        for (int i = top; j < games.length && top + i + games.length < btm; i++) {
+            games[j] = Main.newGame(population[top + i], population[top + games.length + i]);
+            games[j].play();
+            j++;
         }
-        for (int i = 0; i < games.length; i++) {
-            games[i].join();
+        j = 0;
+        for (int i = top; j < games.length && i + games.length < btm; i++) {
             try {
-                population[top + i] = games[i].getWinner();
-                population[top + (i * 2)] = games[i].getLoser();
+//                games[j].join();
+                population[top + i] = games[j].getWinner();
+                population[top + i + games.length] = games[j].getLoser();
             } catch (Game.GameOverException e) {
                 catchGameOver(games[i], top + i, top + (i * 2));
+            } catch (NullPointerException e) {
+//                System.out.println(e.getMessage());
+            } finally {
+                j++;
             }
         }
         if (size > 2) {
-            sort(top, (games.length / 2) - 1);
-            sort(games.length / 2, btm);
+            sort(top, top + (games.length / 2) - 1);
+            sort(btm - (games.length / 2), btm);
         }
     }
 
@@ -50,16 +60,22 @@ public class Population {
         try {
             population[i] = g.getWinner();
             population[j] = g.getLoser();
-        } catch (Game.GameOverException e) {
+        } catch (InterruptedException e) {
             System.out.println("Game " + g.getId() + " interrupted. Waiting .5 seconds.");
             Thread.sleep(500);
             catchGameOver(g, i, j);
+        } catch (Game.GameOverException e) {
+            if (Math.random() < 0.5) {
+                Player p = population[i];
+                population[i] = population[j];
+                population[j] = p;
+            }
         }
     }
     
     private void replaceBottom() {
         int half = population.length / 2;
-        for (int i = 0; i < half; i++)
+        for (int i = 0; half + i < population.length; i++)
             population[half + i] = Main.newPlayer(population[i * 2], population[(i * 2) + 1]);
     }
 }
