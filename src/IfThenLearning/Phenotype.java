@@ -82,7 +82,7 @@ public class Phenotype implements Player {
 
     @Override
     public synchronized int move(State state, int numOfLegalMoves) {
-        if (brain.containsKey(state))
+        if (Math.random() > randomness && brain.containsKey(state))
             return brain.get(state);
         return (int) (Math.random() * numOfLegalMoves);
     }
