@@ -39,3 +39,5 @@ sum of the win rates of both parents, then that pair is inherited from that pare
 When running this program as is, you will be prompted for a population size and generation count. The Population object will be
 instantiated to what ever size you give and iterated however many times you specified. Then you will play against the best member of the
 population.
+
+At least 100,000 generations is recommended.
