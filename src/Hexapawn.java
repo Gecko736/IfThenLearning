@@ -1,4 +1,6 @@
-package IfThenLearning;
+import IfThenLearning.Game;
+import IfThenLearning.Move;
+import IfThenLearning.Player;
 
 import java.util.ArrayList;
 import java.util.Scanner;

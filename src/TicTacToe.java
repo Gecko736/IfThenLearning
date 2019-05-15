@@ -1,11 +1,13 @@
-package IfThenLearning;
-
 /**
  * TicTacToe was originally going to be the only game this program ran. However
  * the algorithm for applying a move to the current game state had too many bugs
  * too close to the due date for this project. A year and a half ago, I made a
  * project similar to this one that played TicTacToe, and it worked just fine,
  * but the game's implementation here just didn't end up working out.
+
+import IfThenLearning.Game;
+import IfThenLearning.Move;
+import IfThenLearning.Player;
 
 import java.util.ArrayList;
 import java.util.Scanner;
